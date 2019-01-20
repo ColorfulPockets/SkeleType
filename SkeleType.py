@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
 import rubik
+import blockdefinitions
 
 # root for main window
 root = Tk(className=" SkeleType")
@@ -154,40 +155,20 @@ def solved():
     colorgreen()
 
 def twobytwo():
-    short = textArea.get("start", INSERT)
-    pos = textArea.search(short, '1.0', stopindex=END)
-    moves = rubik.Algorithm(movestring(textArea.get(0.0, pos)))
     c = rubik.Cube()
-    c.apply_alg(moves)
+    c.apply_alg(movealg())
 
-    good = 0
     is_solved = False
     for i in range(8):
-        if good == 3:
-            is_solved = True
-            break
-        good = 0
 
         c.apply_alg(y)
-
         if i == 4:
             c.apply_alg(x)
             c.apply_alg(x)
 
-        rot_count = 0
-        for j in range(3):
-            if not (c.cube[0][1][0] == c.cube[0][1][1] == c.cube[0][2][0] == c.cube[0][2][1]):
-                while rot_count < 3:
-                    c.apply_alg(z)
-                    c.apply_alg(y)
-                    rot_count = rot_count + 1
-                break
-            c.apply_alg(z)
-            c.apply_alg(y)
-            good = good + 1
-            rot_count = rot_count + 1
-    if good == 3:
-        is_solved = True
+        if blockdefinitions.twobytwosolved(c):
+            is_solved = True
+            break
 
     if is_solved:
         colorgreen()
@@ -216,6 +197,11 @@ def movestring(text):
             if word[0] in rubik.FACE_MOVES and word[1] in ["'", "2"]:
                 moves = moves + " " + word
     return moves
+
+def movealg():
+    short = textArea.get("start", INSERT)
+    pos = textArea.search(short, '1.0', stopindex=END)
+    return rubik.Algorithm(movestring(textArea.get(0.0, pos)))
 
 def clear_tags():
     short = textArea.get("start", INSERT)
