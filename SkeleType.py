@@ -6,26 +6,27 @@ import blockdefinitions
 
 # root for main window
 root = Tk(className=" SkeleType")
-textArea = Text(root, width = 100, height = 20)
-textArea.grid(row=0,column=0, sticky=NSEW)
+textArea = Text(root, width=100, height=20)
+textArea.grid(row=0, column=0, sticky=NSEW)
 scroll = Scrollbar(root)
-scroll.grid(row=0,column=1, sticky=NS)
+scroll.grid(row=0, column=1, sticky=NS)
 scroll.config(command=textArea.yview)
 textArea.config(yscrollcommand=scroll.set)
-output_area = Text(root, width = 100, height = 20)
-output_area.grid(row=1,column=0, sticky=NSEW)
+output_area = Text(root, width=100, height=20)
+output_area.grid(row=1, column=0, sticky=NSEW)
 output_scroll = Scrollbar(root)
-output_scroll.grid(row=1,column=1, sticky = NS)
+output_scroll.grid(row=1, column=1, sticky=NS)
 output_scroll.config(command=output_area.yview)
 output_area.config(yscrollcommand=output_scroll.set)
 
-root.rowconfigure(0,weight=1)
-root.rowconfigure(1,weight=1)
+root.rowconfigure(0, weight=1)
+root.rowconfigure(1, weight=1)
 root.columnconfigure(0, weight=1)
 
 x = rubik.Algorithm('x')
 y = rubik.Algorithm('y')
 z = rubik.Algorithm('z')
+
 
 # Creates a mark "start" at the start of the last word typed, runs run(), unmarks "start"
 def checklastword(event):
@@ -40,6 +41,7 @@ def checklastword(event):
     run()
     textArea.mark_unset("start")
 
+
 # In textArea, detect every time space or return is pressed
 textArea.bind('<space>', checklastword)
 textArea.bind('<Return>', checklastword)
@@ -47,8 +49,6 @@ textArea.bind('<Return>', checklastword)
 #
 # FUNCTIONS
 #
-
-#TODO: make run function take all the text and split it up
 
 
 def run():
@@ -130,63 +130,101 @@ def run():
     func = steps.get(short, clear_tags)
     func()
 
+
 def solution():
     colorgreen()
+
 
 def scramble():
     colorgreen()
 
+
 def eo():
     coloryellow()
+
 
 def pseudo():
     coloryellow()
 
+
 def domino():
     coloryellow()
+
 
 def partialdomino():
     coloryellow()
 
+
 def diamond():
-    colorgreen()
+    c = rubik.Cube()
+    c.apply_alg(movealg())
+
+    if blockdefinitions.check12positions(blockdefinitions.diamondsolved, c):
+        colorgreen()
+    else:
+        colorred()
+
 
 def solved():
-    colorgreen()
+    c = rubik.Cube()
+    c.apply_alg(movealg())
+
+    if c.solved():
+        colorgreen()
+    else:
+        colorred()
+
 
 def twobytwo():
     c = rubik.Cube()
     c.apply_alg(movealg())
 
-    is_solved = False
-    for i in range(8):
-
-        c.apply_alg(y)
-        if i == 4:
-            c.apply_alg(x)
-            c.apply_alg(x)
-
-        if blockdefinitions.twobytwosolved(c):
-            is_solved = True
-            break
-
-    if is_solved:
+    if blockdefinitions.check8positions(blockdefinitions.twobytwosolved, c):
         colorgreen()
     else:
         colorred()
 
+
 def square():
-    colorgreen()
+    c = rubik.Cube()
+    c.apply_alg(movealg())
+
+    if blockdefinitions.check24positions(blockdefinitions.square_solved, c):
+        colorgreen()
+    else:
+        colorred()
+
 
 def roux():
-    colorgreen()
+    c = rubik.Cube()
+    c.apply_alg(movealg())
+    if blockdefinitions.check24positions(blockdefinitions.rouxsolved, c):
+        colorgreen()
+    else:
+        colorred()
+
 
 def twobytwobythree():
-    colorgreen()
+    c = rubik.Cube()
+    c.apply_alg(movealg())
+
+    if blockdefinitions.check12positions(blockdefinitions.twobytwobythreesolved, c):
+        colorgreen()
+    else:
+        colorred()
+
 
 def f2lminusone():
-    colorgreen()
+    c = rubik.Cube()
+    c.apply_alg(movealg())
 
+    if blockdefinitions.check24positions(blockdefinitions.f2lminus1solved, c):
+        colorgreen()
+    else:
+        colorred()
+
+
+# TODO Make it interpret ()
 def movestring(text):
     split_text = text.split()
     moves = ""
@@ -198,10 +236,12 @@ def movestring(text):
                 moves = moves + " " + word
     return moves
 
+
 def movealg():
     short = textArea.get("start", INSERT)
     pos = textArea.search(short, '1.0', stopindex=END)
     return rubik.Algorithm(movestring(textArea.get(0.0, pos)))
+
 
 def clear_tags():
     short = textArea.get("start", INSERT)
@@ -211,6 +251,7 @@ def clear_tags():
     textArea.delete("start", INSERT)
     textArea.insert(INSERT, short, "none")
 
+
 def colorgreen():
     short = textArea.get("start", INSERT)
 
@@ -218,6 +259,7 @@ def colorgreen():
 
     textArea.delete("start", INSERT)
     textArea.insert(INSERT, short, "green")
+
 
 def coloryellow():
     short = textArea.get("start", INSERT)
@@ -227,6 +269,7 @@ def coloryellow():
     textArea.delete("start", INSERT)
     textArea.insert(INSERT, short, "yellow")
 
+
 def colorred():
     short = textArea.get("start", INSERT)
 
@@ -235,6 +278,7 @@ def colorred():
     textArea.delete("start", INSERT)
     textArea.insert(INSERT, short, "red")
 
+
 def openFile():
     file = filedialog.askopenfile(parent=root, mode='rb', title='Select a text file')
 
@@ -242,6 +286,7 @@ def openFile():
         contents = file.read()
         textArea.insert('1.0', contents)
         file.close()
+
 
 def saveFile():
     file = filedialog.asksaveasfile(mode='w')
@@ -252,12 +297,15 @@ def saveFile():
         file.write(data)
         file.close()
 
+
 def quitProgram():
     if messagebox.askyesno("Quit", "Are you sure you want to quit?"):
         root.destroy()
 
+
 def about():
     messagebox.showinfo("About", "If you're seeing this message, I forgot to update this message")
+
 
 # create the menu
 menu = Menu(root)
