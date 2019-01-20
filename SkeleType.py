@@ -24,9 +24,12 @@ root.columnconfigure(0, weight=1)
 # Creates a mark "start" at the start of the last word typed, runs run(), unmarks "start"
 def checklastword(event):
     textArea.mark_set("start", textArea.index(INSERT) + "-1c wordstart")
+
+    # checks for special case where word has hyphen, forces marker to start of word
     if textArea.get(textArea.index("start") + "-1c", textArea.index("start")) == "-":
         textArea.mark_unset("start")
         textArea.mark_set("start", textArea.index(INSERT) + "-1c wordstart -4c")
+
     textArea.mark_gravity("start", LEFT)
     run()
     textArea.mark_unset("start")
