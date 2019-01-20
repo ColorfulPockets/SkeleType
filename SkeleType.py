@@ -24,6 +24,9 @@ root.columnconfigure(0, weight=1)
 # Creates a mark "start" at the start of the last word typed, runs run(), unmarks "start"
 def checklastword(event):
     textArea.mark_set("start", textArea.index(INSERT) + "-1c wordstart")
+    if textArea.get(textArea.index("start") + "-1c", textArea.index("start")) == "-":
+        textArea.mark_unset("start")
+        textArea.mark_set("start", textArea.index(INSERT) + "-1c wordstart -4c")
     textArea.mark_gravity("start", LEFT)
     run()
     textArea.mark_unset("start")
@@ -40,7 +43,142 @@ textArea.bind('<Return>', checklastword)
 
 
 def run():
-    print(textArea.get("start", INSERT))
+    short = textArea.get("start", INSERT)
+
+# The dictionary "steps" contains all different steps in the solve that can be highlighted.
+# Keys are the abbreviations used in the skeleton, dict values are function names
+    steps = {
+        "222": twobytwo,
+        "2x2x2": twobytwo,
+        "2X2X2": twobytwo,
+        "2x2": twobytwo,
+        "2X2": twobytwo,
+        "sq": square,
+        "SQ": square,
+        "122": square,
+        "1x2x2": square,
+        "1X2X2": square,
+        "square": square,
+        "SQUARE": square,
+        "221": square,
+        "2x2x1": square,
+        "2X2X1": square,
+        "123": roux,
+        "1x2x3": roux,
+        "1X2X3": roux,
+        "321": roux,
+        "3x2x1": roux,
+        "3X2X1": roux,
+        "roux": roux,
+        "ROUX": roux,
+        "wall": roux,
+        "WALL": roux,
+        "223": twobytwobythree,
+        "322": twobytwobythree,
+        "2x2x3": twobytwobythree,
+        "2X2X3": twobytwobythree,
+        "3x2x2": twobytwobythree,
+        "3X2X2": twobytwobythree,
+        "petrus": twobytwobythree,
+        "PETRUS": twobytwobythree,
+        "F2L-1": f2lminusone,
+        "f2l-1": f2lminusone,
+        "xxxcross": f2lminusone,
+        "XXXCROSS": f2lminusone,
+        "eo": eo,
+        "EO": eo,
+        "p-": pseudo,
+        "P-": pseudo,
+        "dr": domino,
+        "DR": domino,
+        "domino": domino,
+        "DOMINO": domino,
+        "dom": domino,
+        "DOM": domino,
+        "pdr": partialdomino,
+        "PDR": partialdomino,
+        "diamond": diamond,
+        "DIAMOND": diamond,
+        "f2l-2": diamond,
+        "F2L-2": diamond,
+        "solved": solved,
+        "SOLVED": solved,
+        "FINISH": solved,
+        "finish": solved,
+        "finished": solved,
+        "FINISHED": solved,
+        "solve": solved,
+        "done": solved,
+        "DONE": solved,
+    }
+
+    func = steps.get(short, clear_tags)
+    func()
+
+def eo():
+    coloryellow()
+
+def pseudo():
+    coloryellow()
+
+def domino():
+    coloryellow()
+
+def partialdomino():
+    coloryellow()
+
+def diamond():
+    colorgreen()
+
+def solved():
+    colorgreen()
+
+def twobytwo():
+    colorgreen()
+
+def square():
+    colorgreen()
+
+def roux():
+    colorgreen()
+
+def twobytwobythree():
+    colorgreen()
+
+def f2lminusone():
+    colorgreen()
+
+def clear_tags():
+    short = textArea.get("start", INSERT)
+
+    textArea.tag_configure("none", foreground="black")
+
+    textArea.delete("start", INSERT)
+    textArea.insert(INSERT, short, "none")
+
+def colorgreen():
+    short = textArea.get("start", INSERT)
+
+    textArea.tag_configure("green", foreground="green")
+
+    textArea.delete("start", INSERT)
+    textArea.insert(INSERT, short, "green")
+
+def coloryellow():
+    short = textArea.get("start", INSERT)
+
+    textArea.tag_configure("yellow", foreground="orange")
+
+    textArea.delete("start", INSERT)
+    textArea.insert(INSERT, short, "yellow")
+
+def colorred():
+    short = textArea.get("start", INSERT)
+
+    textArea.tag_configure("red", foreground="red")
+
+    textArea.delete("start", INSERT)
+    textArea.insert(INSERT, short, "red")
 
 def openFile():
     file = filedialog.askopenfile(parent=root, mode='rb', title='Select a text file')
@@ -65,6 +203,7 @@ def quitProgram():
 
 def about():
     messagebox.showinfo("About","If you're seeing this message, I forgot to update this message")
+
 # create the menu
 menu = Menu(root)
 root.config(menu=menu)
