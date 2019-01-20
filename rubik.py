@@ -106,7 +106,7 @@ class Cube(object):
     """
 
     def __init__(self):
-        self.cube = [[[i for _ in xrange(3)] for _ in xrange(3)] for i in xrange(6)]
+        self.cube = [[[i for _ in range(3)] for _ in range(3)] for i in range(6)]
 
     def __repr__(self):
         return str(self.cube)
@@ -260,8 +260,7 @@ class Cube(object):
 
     def _cycle_stickers(self, *args):
         t = self.cube[args[len(args) - 1][0]][args[len(args) - 1][1]][args[len(args) - 1][2]]
-        loop = range(len(args))
-        loop.reverse()
+        loop = reversed(range(len(args)))
         for i in loop:
             if i > 0:
                 self.cube[args[i][0]][args[i][1]][args[i][2]] = self.cube[args[i - 1][0]][args[i - 1][1]][
@@ -270,8 +269,7 @@ class Cube(object):
 
     def _cycle_rows(self, *args):
         t = self.cube[args[len(args) - 1][0]][args[len(args) - 1][1]]
-        loop = range(len(args))
-        loop.reverse()
+        loop = reversed(range(len(args)))
         for i in loop:
             if i > 0:
                 self.cube[args[i][0]][args[i][1]] = self.cube[args[i - 1][0]][args[i - 1][1]]

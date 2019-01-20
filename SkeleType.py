@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
+import rubik
 
 # root for main window
 root = Tk(className=" SkeleType")
@@ -20,6 +21,10 @@ output_area.config(yscrollcommand=output_scroll.set)
 root.rowconfigure(0,weight=1)
 root.rowconfigure(1,weight=1)
 root.columnconfigure(0, weight=1)
+
+x = rubik.Algorithm('x')
+y = rubik.Algorithm('y')
+z = rubik.Algorithm('z')
 
 # Creates a mark "start" at the start of the last word typed, runs run(), unmarks "start"
 def checklastword(event):
@@ -113,10 +118,22 @@ def run():
         "solve": solved,
         "done": solved,
         "DONE": solved,
+        "Scramble:": scramble,
+        "SCRAMBLE:": scramble,
+        "scramble:": scramble,
+        "Solution:": solution,
+        "SOLUTION:": solution,
+        "solution:": solution
     }
 
     func = steps.get(short, clear_tags)
     func()
+
+def solution():
+    colorgreen()
+
+def scramble():
+    colorgreen()
 
 def eo():
     coloryellow()
@@ -137,7 +154,45 @@ def solved():
     colorgreen()
 
 def twobytwo():
-    colorgreen()
+    short = textArea.get("start", INSERT)
+    pos = textArea.search(short, '1.0', stopindex=END)
+    moves = rubik.Algorithm(movestring(textArea.get(0.0, pos)))
+    c = rubik.Cube()
+    c.apply_alg(moves)
+
+    good = 0
+    is_solved = False
+    for i in range(8):
+        if good == 3:
+            is_solved = True
+            break
+        good = 0
+
+        c.apply_alg(y)
+
+        if i == 4:
+            c.apply_alg(x)
+            c.apply_alg(x)
+
+        rot_count = 0
+        for j in range(3):
+            if not (c.cube[0][1][0] == c.cube[0][1][1] == c.cube[0][2][0] == c.cube[0][2][1]):
+                while rot_count < 3:
+                    c.apply_alg(z)
+                    c.apply_alg(y)
+                    rot_count = rot_count + 1
+                break
+            c.apply_alg(z)
+            c.apply_alg(y)
+            good = good + 1
+            rot_count = rot_count + 1
+    if good == 3:
+        is_solved = True
+
+    if is_solved:
+        colorgreen()
+    else:
+        colorred()
 
 def square():
     colorgreen()
@@ -150,6 +205,17 @@ def twobytwobythree():
 
 def f2lminusone():
     colorgreen()
+
+def movestring(text):
+    split_text = text.split()
+    moves = ""
+    for word in split_text:
+        if word in rubik.FACE_MOVES:
+            moves = moves + " " + word
+        elif len(word) == 2:
+            if word[0] in rubik.FACE_MOVES and word[1] in ["'", "2"]:
+                moves = moves + " " + word
+    return moves
 
 def clear_tags():
     short = textArea.get("start", INSERT)
@@ -201,11 +267,11 @@ def saveFile():
         file.close()
 
 def quitProgram():
-    if messagebox.askyesno("Quit","Are you sure you want to quit?"):
+    if messagebox.askyesno("Quit", "Are you sure you want to quit?"):
         root.destroy()
 
 def about():
-    messagebox.showinfo("About","If you're seeing this message, I forgot to update this message")
+    messagebox.showinfo("About", "If you're seeing this message, I forgot to update this message")
 
 # create the menu
 menu = Menu(root)
