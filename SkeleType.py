@@ -5,27 +5,28 @@ from tkinter import messagebox
 # root for main window
 root = Tk(className=" SkeleType")
 textArea = Text(root, width = 100, height = 20)
-textArea.grid(row=0,column=0)
+textArea.grid(row=0,column=0, sticky=NSEW)
 scroll = Scrollbar(root)
 scroll.grid(row=0,column=1, sticky=NS)
 scroll.config(command=textArea.yview)
 textArea.config(yscrollcommand=scroll.set)
 output_area = Text(root, width = 100, height = 20)
-output_area.grid(row=1,column=0)
+output_area.grid(row=1,column=0, sticky=NSEW)
 output_scroll = Scrollbar(root)
 output_scroll.grid(row=1,column=1, sticky = NS)
 output_scroll.config(command=output_area.yview)
 output_area.config(yscrollcommand=output_scroll.set)
 
-# set up initial mark in textArea
-textArea.mark_set("start", INSERT)
-textArea.mark_gravity("start", LEFT)
+root.rowconfigure(0,weight=1)
+root.rowconfigure(1,weight=1)
+root.columnconfigure(0, weight=1)
 
+# Creates a mark "start" at the start of the last word typed, runs run(), unmarks "start"
 def checklastword(event):
+    textArea.mark_set("start", textArea.index(INSERT) + "-1c wordstart")
+    textArea.mark_gravity("start", LEFT)
     run()
     textArea.mark_unset("start")
-    textArea.mark_set("start", INSERT)
-    textArea.mark_gravity("start", LEFT)
 
 # In textArea, detect every time space or return is pressed
 textArea.bind('<space>', checklastword)
