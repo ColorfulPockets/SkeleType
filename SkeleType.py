@@ -19,6 +19,8 @@ output_scroll.grid(row=1, column=1, sticky=NS)
 output_scroll.config(command=output_area.yview)
 output_area.config(yscrollcommand=output_scroll.set)
 
+textArea.insert(1.0, "Scramble: ")
+
 root.rowconfigure(0, weight=1)
 root.rowconfigure(1, weight=1)
 root.columnconfigure(0, weight=1)
@@ -223,6 +225,7 @@ def f2lminusone():
     else:
         colorred()
 
+# TODO add F2L detection
 
 # TODO Make this way simpler with a stack based system
 def movestring(text):
@@ -269,8 +272,6 @@ def invstring(word):
 def movealg():
     short = textArea.get("start", INSERT)
     pos = textArea.search(short, '0.0', stopindex=END)
-    print(textArea.get(2.0, pos))
-    print(movestring(textArea.get(2.0, pos)))
     return rubik.Algorithm(movestring(textArea.get(2.0, pos))[0] + movestring(textArea.get(1.0, 2.0))[1] + movestring(textArea.get(2.0, pos))[1])
 
 
