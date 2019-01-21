@@ -224,23 +224,54 @@ def f2lminusone():
         colorred()
 
 
-# TODO Make it interpret ()
+# TODO Make this way simpler with a stack based system
 def movestring(text):
     split_text = text.split()
     moves = ""
+    invmoves = ""
+    inverse = False
     for word in split_text:
-        if word in rubik.FACE_MOVES:
+        if word in rubik.FACE_MOVES and not inverse:
             moves = moves + " " + word
-        elif len(word) == 2:
-            if word[0] in rubik.FACE_MOVES and word[1] in ["'", "2"]:
+        elif len(word) == 2 and not inverse and word[0] in rubik.FACE_MOVES and word[1] in ["'", "2"]:
                 moves = moves + " " + word
-    return moves
+        elif word[0] == "(" and word[len(word) - 1] == ")":
+            invword = word[1:len(word) - 1]
+            invmoves = invstring(invword) + " " + invmoves
+        elif word[0] == "(":
+            invword = word[1:len(word)]
+            if invword in rubik.FACE_MOVES:
+                invmoves = invstring(invword) + " " + invmoves
+            elif len(invword) == 2:
+                if invword[0] in rubik.FACE_MOVES and invword[1] in ["'", "2"]:
+                    invmoves = invstring(invword) + " " + invmoves
+            inverse = True
+        elif (inverse and not word[len(word) - 1] == ")" and len(word) == 2 and word[0] in rubik.FACE_MOVES and word[1] in ["'", "2"]) or word in rubik.FACE_MOVES:
+            invmoves = invstring(word) + " " + invmoves
+        elif word[len(word) - 1] == ")":
+            invword = word[0:len(word) - 1]
+            if invword in rubik.FACE_MOVES or (len(invword) == 2 and invword[0] in rubik.FACE_MOVES and invword[1] in ["'", "2"]):
+                invmoves = invstring(invword) + " " + invmoves
+            inverse = False
+    return [invmoves, moves]
 
+
+def invstring(word):
+    if word in rubik.FACE_MOVES:
+        move = word + "'"
+    elif len(word) == 2:
+        if word[1] == "'":
+            move = word[0:len(word) - 1]
+        elif word[1] == "2":
+            move = word
+    return move
 
 def movealg():
     short = textArea.get("start", INSERT)
-    pos = textArea.search(short, '1.0', stopindex=END)
-    return rubik.Algorithm(movestring(textArea.get(0.0, pos)))
+    pos = textArea.search(short, '0.0', stopindex=END)
+    print(textArea.get(2.0, pos))
+    print(movestring(textArea.get(2.0, pos)))
+    return rubik.Algorithm(movestring(textArea.get(2.0, pos))[0] + movestring(textArea.get(1.0, 2.0))[1] + movestring(textArea.get(2.0, pos))[1])
 
 
 def clear_tags():
