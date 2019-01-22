@@ -126,7 +126,13 @@ def run():
         "scramble:": scramble,
         "Solution:": solution,
         "SOLUTION:": solution,
-        "solution:": solution
+        "solution:": solution,
+        "f2l": f2l,
+        "F2L": f2l,
+        "skip": solved,
+        "SKIP": solved,
+        "cross": cross,
+        "CROSS": cross
     }
 
     func = steps.get(short, clear_tags)
@@ -225,7 +231,26 @@ def f2lminusone():
     else:
         colorred()
 
-# TODO add F2L detection
+
+def f2l():
+    c = rubik.Cube()
+    c.apply_alg(movealg())
+
+    if blockdefinitions.check6positions(blockdefinitions.f2lsolved, c):
+        colorgreen()
+    else:
+        colorred()
+
+
+def cross():
+    c = rubik.Cube()
+    c.apply_alg(movealg())
+
+    if blockdefinitions.check6positions(blockdefinitions.cross_solved, c):
+        colorgreen()
+    else:
+        colorred()
+
 
 # TODO Make this way simpler with a stack based system
 def movestring(text):

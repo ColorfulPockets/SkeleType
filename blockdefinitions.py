@@ -4,6 +4,7 @@ x = rubik.Algorithm('x')
 y = rubik.Algorithm('y')
 z = rubik.Algorithm('z')
 
+
 # checks if UFL square is solved
 def square_solved(c):
     if not (c.cube[0][1][0] == c.cube[0][1][1] == c.cube[0][2][0] == c.cube[0][2][1]):
@@ -22,6 +23,7 @@ def square_solved(c):
         c.apply_alg(rubik.Algorithm('y z z x'))
         return False
 
+
 # checks if UFL 2x2x2 is solved
 def twobytwosolved(c):
     is_solved = True
@@ -31,6 +33,7 @@ def twobytwosolved(c):
         if not square_solved(c):
             is_solved = False
     return is_solved
+
 
 # checks if UF 2x2x3 is solved
 def twobytwobythreesolved(c):
@@ -76,6 +79,7 @@ def diamondsolved(c):
         return False
 
 
+# checks if F2L on U missing BL pair is solved
 def f2lminus1solved(c):
     if not twobytwosolved(c):
         return False
@@ -90,6 +94,32 @@ def f2lminus1solved(c):
     else:
         c.apply_alg(rubik.Algorithm("y2"))
         return False
+
+
+# checks F2L on U
+def f2lsolved(c):
+    if not twobytwobythreesolved(c):
+        return False
+    c.apply_alg(rubik.Algorithm("y2"))
+    if twobytwobythreesolved(c):
+        c.apply_alg(rubik.Algorithm("y2"))
+        return True
+    else:
+        c.apply_alg(rubik.Algorithm("y2"))
+        return False
+
+
+def cross_solved(c):
+    if not c.cube[0][0][1] == c.cube[0][1][0] == c.cube[0][1][2] == c.cube[0][2][1] == c.cube[0][1][1]:
+        return False
+    c.apply_alg(x)
+    is_solved = True
+    for i in range(4):
+        c.apply_alg(z)
+        if not c.cube[0][0][1] == c.cube[0][1][1]:
+            is_solved = False
+    c.apply_alg(rubik.Algorithm("x'"))
+    return is_solved
 
 
 def check24positions(func, c):
@@ -127,3 +157,18 @@ def check8positions(func, c):
         if func(c):
             return True
     return False
+
+
+def check6positions(func, c):
+    for i in range(4):
+        c.apply_alg(x)
+        if func(c):
+            return True
+    c.apply_alg(y)
+    if func(c):
+        return True
+    c.apply_alg(rubik.Algorithm("x2"))
+    if func(c):
+        return True
+    return False
+
