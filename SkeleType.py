@@ -29,6 +29,83 @@ x = rubik.Algorithm('x')
 y = rubik.Algorithm('y')
 z = rubik.Algorithm('z')
 
+abbreviations = {
+        "222": "2x2x2",
+        "2x2x2": "2x2x2",
+        "2X2X2": "2x2x2",
+        "2x2": "2x2x2",
+        "2X2": "2x2x2",
+        "sq": "Square",
+        "SQ": "Square",
+        "122": "Square",
+        "1x2x2": "Square",
+        "1X2X2": "Square",
+        "square": "Square",
+        "SQUARE": "Square",
+        "221": "Square",
+        "2x2x1": "Square",
+        "2X2X1": "Square",
+        "123": "1x2x3",
+        "1x2x3": "1x2x3",
+        "1X2X3": "1x2x3",
+        "321": "1x2x3",
+        "3x2x1": "1x2x3",
+        "3X2X1": "1x2x3",
+        "roux": "1x2x3",
+        "ROUX": "1x2x3",
+        "wall": "1x2x3",
+        "WALL": "1x2x3",
+        "223": "2x2x3",
+        "322": "2x2x3",
+        "2x2x3": "2x2x3",
+        "2X2X3": "2x2x3",
+        "3x2x2": "2x2x3",
+        "3X2X2": "2x2x3",
+        "petrus": "2x2x3",
+        "PETRUS": "2x2x3",
+        "F2L-1": "F2L-1",
+        "f2l-1": "F2L-1",
+        "xxxcross": "F2L-1",
+        "XXXCROSS": "F2L-1",
+        "eo": "EO",
+        "EO": "EO",
+        "p-": "Pseudo",
+        "P-": "Pseudo",
+        "ps": "Pseudo",
+        "PS": "Pseudo",
+        "p": "Pseudo",
+        "P": "Pseudo",
+        "ps-": "Pseudo",
+        "PS-": "Pseudo",
+        "dr": "Domino Reduction",
+        "DR": "Domino Reduction",
+        "domino": "Domino Reduction",
+        "DOMINO": "Domino Reduction",
+        "dom": "Domino Reduction",
+        "DOM": "Domino Reduction",
+        "pdr": "PDR",
+        "PDR": "PDR",
+        "diamond": "Diamond",
+        "DIAMOND": "Diamond",
+        "f2l-2": "Diamond",
+        "F2L-2": "Diamond",
+        "solved": "Solved",
+        "SOLVED": "Solved",
+        "FINISH": "Solved",
+        "finish": "Solved",
+        "finished": "Solved",
+        "FINISHED": "Solved",
+        "solve": "Solved",
+        "done": "Solved",
+        "DONE": "Solved",
+        "f2l": "F2L",
+        "F2L": "F2L",
+        "skip": "Solved",
+        "SKIP": "Solved",
+        "cross": "Cross",
+        "CROSS": "Cross"
+    }
+
 
 # Creates a mark "start" at the start of the last word typed, runs run(), unmarks "start"
 def checklastword(event):
@@ -386,26 +463,28 @@ def colorred():
     textArea.insert(INSERT, short, "red")
 
 
-def openFile():
+def openfile():
     file = filedialog.askopenfile(parent=root, mode='rb', title='Select a text file')
 
-    if file != None:
+    if file is not None:
         contents = file.read()
+        textArea.delete(1.0, END)
         textArea.insert('1.0', contents)
         file.close()
 
 
-def saveFile():
+def savefile(e):
+    lambda e: None
     file = filedialog.asksaveasfile(mode='w')
 
-    if file != None:
+    if file is not None:
         # removes last character, which is extra return
         data = textArea.get('1.0', END+'-1c')
         file.write(data)
         file.close()
 
 
-def quitProgram():
+def quitprogram():
     if messagebox.askyesno("Quit", "Are you sure you want to quit?"):
         root.destroy()
 
@@ -414,13 +493,43 @@ def about():
     messagebox.showinfo("About", "If you're seeing this message, I forgot to update this message")
 
 
+# TODO: Make this whole thing work
 def transcribe():
     c = rubik.Cube()
-    solvestart = textArea.search("Solution:", END, stopindex=1.0, backwards=TRUE)
-    c.apply_alg(rubik.Algorithm(movestring(textArea.get(1.0, 2.0))[1] + movestring(textArea.get(solvestart, END))[1]))
+    try:
+        solvestart = textArea.search("Solution: ", END, stopindex=1.0, backwards=TRUE)
 
-    if c.solved():
-        print("solved")
+        c.apply_alg(rubik.Algorithm(movestring(textArea.get(1.0, 2.0))[1] + movestring(textArea.get(solvestart, END))[1]))
+
+        output_area.delete(1.0, END)
+
+        movecount = len(textArea.get(solvestart, END).split()) - 1
+
+        if not c.solved():
+            messagebox.showwarning("Solution Does Not Work", "Warning: the solution written after \"Solution:\" does "
+                                                             "not work for the provided scramble.\n\nThe skeleton has"
+                                                             " been formatted anyway, but it may not work.")
+
+        split_text = textArea.get(1.0, END).split("\n")
+        formatted_text = ""
+
+        for line in split_text:
+            split_line = line.split()
+            for word in split_line:
+                if word is "//":
+                    formatted_text = formatted_text + "\n"
+                elif word in abbreviations:
+                    formatted_text = formatted_text + " " + abbreviations.get(word)
+                else:
+                    formatted_text = formatted_text + " " + word
+            formatted_text = formatted_text + "\n"
+
+        output_area.insert(1.0, formatted_text + "\n" + str(movecount) + " Moves.")
+    except TclError:
+        messagebox.showerror("Solution: deleted or modified", "Error: The word \"Solution: \" has been deleted or "
+                                                              "modified. Please type \"Solution: \" at the start "
+                                                              "of your solution (with a space before the first move of"
+                                                              " your solution).")
 
 
 # create the menu
@@ -430,12 +539,14 @@ fileMenu = Menu(menu)
 menu.add_cascade(label="Run", command=transcribe)
 menu.add_cascade(label="File", menu=fileMenu)
 fileMenu.add_command(label="New")
-fileMenu.add_command(label="Open", command=openFile)
-fileMenu.add_command(label="Save", command=saveFile)
+fileMenu.add_command(label="Open", command=openfile)
+fileMenu.add_command(label="Save", command=savefile)
 fileMenu.add_separator()
-fileMenu.add_command(label="Exit", command=quitProgram)
+fileMenu.add_command(label="Exit", command=quitprogram)
 
 menu.add_cascade(label="About", command=about)
+
+root.bind('<Control-s>', savefile)
 
 # keep window open
 root.mainloop()
