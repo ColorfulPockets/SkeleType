@@ -20,6 +20,7 @@ output_scroll.config(command=output_area.yview)
 output_area.config(yscrollcommand=output_scroll.set)
 
 textArea.insert(1.0, "Scramble: ")
+textArea.insert(3.0, "\n\n\nSolution: ")
 
 root.rowconfigure(0, weight=1)
 root.rowconfigure(1, weight=1)
@@ -364,11 +365,20 @@ def about():
     messagebox.showinfo("About", "If you're seeing this message, I forgot to update this message")
 
 
+def transcribe():
+    c = rubik.Cube()
+    solvestart = textArea.search("Solution:", END, stopindex=1.0, backwards=TRUE)
+    c.apply_alg(rubik.Algorithm(movestring(textArea.get(1.0, 2.0))[1] + movestring(textArea.get(solvestart, END))[1]))
+
+    if c.solved():
+        print("solved")
+
+
 # create the menu
 menu = Menu(root)
 root.config(menu=menu)
 fileMenu = Menu(menu)
-menu.add_cascade(label="Run", command=run)
+menu.add_cascade(label="Run", command=transcribe)
 menu.add_cascade(label="File", menu=fileMenu)
 fileMenu.add_command(label="New")
 fileMenu.add_command(label="Open", command=openFile)
