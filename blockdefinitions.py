@@ -109,6 +109,7 @@ def f2lsolved(c):
         return False
 
 
+# checks cross on U
 def cross_solved(c):
     if not c.cube[0][0][1] == c.cube[0][1][0] == c.cube[0][1][2] == c.cube[0][2][1] == c.cube[0][1][1]:
         return False
@@ -119,6 +120,105 @@ def cross_solved(c):
         if not c.cube[0][0][1] == c.cube[0][1][1]:
             is_solved = False
     c.apply_alg(rubik.Algorithm("x'"))
+    return is_solved
+
+
+# checks if F front EO is done
+def eosolved(c):
+    up = c.cube[0][1][1]
+    c.apply_alg(z)
+    left = c.cube[0][1][1]
+    c.apply_alg(z)
+    down = c.cube[0][1][1]
+    c.apply_alg(z)
+    right = c.cube[0][1][1]
+
+    if c.cube[0][0][1] == up or c.cube[0][1][0] == up or c.cube[0][1][2] == up or c.cube[0][2][1] == up or (
+      c.cube[0][0][1]) == down or c.cube[0][1][0] == down or c.cube[0][1][2] == down or c.cube[0][2][1] == down:
+        c.apply_alg(z)
+        return False
+
+    c.apply_alg(rubik.Algorithm("z2"))
+
+    if c.cube[0][0][1] == up or c.cube[0][1][0] == up or c.cube[0][1][2] == up or c.cube[0][2][1] == up or (
+      c.cube[0][0][1]) == down or c.cube[0][1][0] == down or c.cube[0][1][2] == down or c.cube[0][2][1] == down:
+        c.apply_alg(rubik.Algorithm("z'"))
+        return False
+
+    c.apply_alg(z)
+
+    if c.cube[0][0][1] == left or c.cube[0][1][0] == left or c.cube[0][1][2] == left or c.cube[0][2][1] == left or (
+      c.cube[0][0][1]) == right or c.cube[0][1][0] == right or c.cube[0][1][2] == right or c.cube[0][2][1] == right:
+        c.apply_alg(rubik.Algorithm("z2"))
+        return False
+
+    c.apply_alg(rubik.Algorithm("z2"))
+
+    if c.cube[0][0][1] == left or c.cube[0][1][0] == left or c.cube[0][1][2] == left or c.cube[0][2][1] == left or (
+      c.cube[0][0][1]) == right or c.cube[0][1][0] == right or c.cube[0][1][2] == right or c.cube[0][2][1] == right:
+        return False
+
+    c.apply_alg(x)
+
+    if c.cube[0][1][0] == left or c.cube[0][1][2] == left or c.cube[0][1][0] == right or c.cube[0][1][2] == right:
+        c.apply_alg(rubik.Algorithm("x'"))
+        return False
+
+    c.apply_alg(rubik.Algorithm("x2"))
+
+    if c.cube[0][1][0] == left or c.cube[0][1][2] == left or c.cube[0][1][0] == right or c.cube[0][1][2] == right:
+        c.apply_alg(x)
+        return False
+
+    c.apply_alg(y)
+
+    if c.cube[0][1][0] == up or c.cube[0][1][2] == up or c.cube[0][1][0] == down or c.cube[0][1][2] == down:
+        c.apply_alg(rubik.Algorithm("y' x'"))
+        return False
+
+    c.apply_alg(rubik.Algorithm("x2"))
+
+    if c.cube[0][1][0] == up or c.cube[0][1][2] == up or c.cube[0][1][0] == down or c.cube[0][1][2] == down:
+        c.apply_alg(rubik.Algorithm("y x'"))
+        return False
+
+    c.apply_alg(rubik.Algorithm("y x'"))
+    return True
+
+
+# checks if pdr with EO on F and R is done
+def pdrsolved(c):
+    if not eosolved(c):
+        return False
+    c.apply_alg(y)
+
+    if not eosolved(c):
+        c.apply_alg(rubik.Algorithm("y'"))
+        return False
+    c.apply_alg(rubik.Algorithm("y'"))
+
+    return True
+
+
+def dominosolved(c):
+    is_solved = True
+
+    up = c.cube[0][1][1]
+    c.apply_alg(rubik.Algorithm("z2"))
+    down = c.cube[0][1][1]
+
+    for i in range(3):
+        for j in range(3):
+            if not (c.cube[0][i][j] == up or c.cube[0][i][j] == down):
+                is_solved = False
+
+    c.apply_alg(rubik.Algorithm("z2"))
+
+    for i in range(3):
+        for j in range(3):
+            if not (c.cube[0][i][j] == up or c.cube[0][i][j] == down):
+                is_solved = False
+
     return is_solved
 
 

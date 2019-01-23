@@ -19,8 +19,7 @@ output_scroll.grid(row=1, column=1, sticky=NS)
 output_scroll.config(command=output_area.yview)
 output_area.config(yscrollcommand=output_scroll.set)
 
-textArea.insert(1.0, "Scramble: ")
-textArea.insert(3.0, "\n\n\nSolution: ")
+textArea.insert(1.0, "Scramble: \n\n\n\nSolution: ")
 
 root.rowconfigure(0, weight=1)
 root.rowconfigure(1, weight=1)
@@ -101,6 +100,12 @@ def run():
         "EO": eo,
         "p-": pseudo,
         "P-": pseudo,
+        "ps": pseudo,
+        "PS": pseudo,
+        "p": pseudo,
+        "P": pseudo,
+        "ps-": pseudo,
+        "PS-": pseudo,
         "dr": domino,
         "DR": domino,
         "domino": domino,
@@ -122,12 +127,6 @@ def run():
         "solve": solved,
         "done": solved,
         "DONE": solved,
-        "Scramble:": scramble,
-        "SCRAMBLE:": scramble,
-        "scramble:": scramble,
-        "Solution:": solution,
-        "SOLUTION:": solution,
-        "solution:": solution,
         "f2l": f2l,
         "F2L": f2l,
         "skip": solved,
@@ -140,16 +139,28 @@ def run():
     func()
 
 
-def solution():
-    colorgreen()
-
-
-def scramble():
-    colorgreen()
-
 
 def eo():
-    coloryellow()
+    c = rubik.Cube()
+    c.apply_alg(movealg())
+
+    is_solved = False
+
+    if blockdefinitions.eosolved(c):
+        is_solved = True
+
+    c.apply_alg(x)
+    if blockdefinitions.eosolved(c):
+        is_solved = True
+
+    c.apply_alg(y)
+    if blockdefinitions.eosolved(c):
+        is_solved = True
+
+    if is_solved:
+        colorgreen()
+    else:
+        colorred()
 
 
 def pseudo():
@@ -157,11 +168,49 @@ def pseudo():
 
 
 def domino():
-    coloryellow()
+    c = rubik.Cube()
+    c.apply_alg(movealg())
+
+    is_solved = False
+
+    if blockdefinitions.dominosolved(c):
+        is_solved = True
+
+    c.apply_alg(x)
+    if blockdefinitions.dominosolved(c):
+        is_solved = True
+
+    c.apply_alg(z)
+    if blockdefinitions.dominosolved(c):
+        is_solved = True
+
+    if is_solved:
+        colorgreen()
+    else:
+        colorred()
 
 
 def partialdomino():
-    coloryellow()
+    c = rubik.Cube()
+    c.apply_alg(movealg())
+
+    is_solved = False
+
+    if blockdefinitions.pdrsolved(c):
+        is_solved = True
+
+    c.apply_alg(x)
+    if blockdefinitions.pdrsolved(c):
+        is_solved = True
+
+    c.apply_alg(z)
+    if blockdefinitions.pdrsolved(c):
+        is_solved = True
+
+    if is_solved:
+        colorgreen()
+    else:
+        colorred()
 
 
 def diamond():
