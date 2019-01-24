@@ -19,7 +19,7 @@ output_scroll.grid(row=1, column=1, sticky=NS)
 output_scroll.config(command=output_area.yview)
 output_area.config(yscrollcommand=output_scroll.set)
 
-textArea.insert(1.0, "Scramble: \n\n\n\nSolution: ")
+textArea.insert(1.0, "Scramble: \n\nSolution: ")
 
 root.rowconfigure(0, weight=1)
 root.rowconfigure(1, weight=1)
@@ -473,8 +473,11 @@ def openfile():
         file.close()
 
 
+def savefileproxy():
+    savefile("e")
+
+
 def savefile(e):
-    lambda e: None
     file = filedialog.asksaveasfile(mode='w')
 
     if file is not None:
@@ -490,16 +493,36 @@ def quitprogram():
 
 
 def about():
-    messagebox.showinfo("About", "If you're seeing this message, I forgot to update this message")
+    messagebox.showinfo("About", "This is an assistant to help you type and format your FMC skeletons and solutions"
+                                 " quickly. After you type them in the upper box, press \"Run\" or control + R to get "
+                                 "a nicely formatted solution in the lower box.\n\nCopy the scramble onto the first "
+                                 "line, write your skeleton in between, and type your solution on the last line. Use"
+                                 " \"//\"  to label parts of your"
+                                 " skeleton. SkeleType will automatically check if your solution is correct while you "
+                                 "are typing it.\n\nSkeleType will also format your solution with a movecount and "
+                                 "expand abbreviations for blocks and other steps in the skeleton.  \n\nIf "
+                                 "you have any questions or suggestions, tweet me "
+                                 "@AndrewNathenson\n\nWARNING: DO NOT "
+                                 "DELETE \"Scramble: \" OR \"Solution: \" -- it will break. \n\nThe following shortcuts"
+                                 " can be used and will be detected and color-coded (green = it "
+                                 "works!, red = it doesn't work) "
+                                 "along with some variations of these phrases:\n\nSquare: sq, 122, 221\n\n1x2x3: roux, 123,"
+                                 " 321\n\n2x2x2: 222, 2x2\n\n2x2x3: 223, 322, petrus\n\nDomino Reduction: dr, dom, "
+                                 "domino\n\nOther abbreviations and labels are also detected. Try typing different"
+                                 " things to see what works, or check the source code or something for the full list.")
 
 
-# TODO: Make this whole thing work
-def transcribe():
+def transcribeproxy():
+    transcribe("e")
+
+
+def transcribe(e):
     c = rubik.Cube()
     try:
         solvestart = textArea.search("Solution: ", END, stopindex=1.0, backwards=TRUE)
 
-        c.apply_alg(rubik.Algorithm(movestring(textArea.get(1.0, 2.0))[1] + movestring(textArea.get(solvestart, END))[1]))
+        c.apply_alg(rubik.Algorithm(movestring(textArea.get(1.0, 2.0))[1] + movestring(
+            textArea.get(solvestart, END))[1]))
 
         output_area.delete(1.0, END)
 
@@ -512,16 +535,32 @@ def transcribe():
 
         split_text = textArea.get(1.0, END).split("\n")
         formatted_text = ""
+        totalmoves = 0
+        linecount = 0
 
         for line in split_text:
+            if linecount == 1:
+                totalmoves = 0
+            linecount = linecount + 1
             split_line = line.split()
+            is_in_move_area = True
+            line_length = 0
             for word in split_line:
                 if word is "//":
                     formatted_text = formatted_text + "\n"
+                    is_in_move_area = False
                 elif word in abbreviations:
-                    formatted_text = formatted_text + " " + abbreviations.get(word)
+                    formatted_text = formatted_text + abbreviations.get(word) + " "
                 else:
-                    formatted_text = formatted_text + " " + word
+                    formatted_text = formatted_text + word + " "
+
+                if is_in_move_area and (word in blockdefinitions.moves or word in blockdefinitions.moves_closed_paren
+                                        or word in blockdefinitions.moves_open_paren):
+                    totalmoves = totalmoves + 1
+                    line_length = line_length + 1
+
+            if "//" in split_line:
+                formatted_text = formatted_text + "(" + str(line_length) + "/" + str(totalmoves) + ")"
             formatted_text = formatted_text + "\n"
 
         output_area.insert(1.0, formatted_text + "\n" + str(movecount) + " Moves.")
@@ -536,17 +575,31 @@ def transcribe():
 menu = Menu(root)
 root.config(menu=menu)
 fileMenu = Menu(menu)
-menu.add_cascade(label="Run", command=transcribe)
+menu.add_cascade(label="Run", command=transcribeproxy)
 menu.add_cascade(label="File", menu=fileMenu)
 fileMenu.add_command(label="New")
 fileMenu.add_command(label="Open", command=openfile)
-fileMenu.add_command(label="Save", command=savefile)
+fileMenu.add_command(label="Save", command=savefileproxy)
 fileMenu.add_separator()
 fileMenu.add_command(label="Exit", command=quitprogram)
 
 menu.add_cascade(label="About", command=about)
 
+
+def select_all_1(e):
+    textArea.tag_add("sel", '1.0', 'end')
+
+def select_all_2(e):
+    output_area.tag_add("sel", '1.0', 'end')
+
 root.bind('<Control-s>', savefile)
+root.bind('<Control-r>', transcribe)
+root.bind('<Control-S>', savefile)
+root.bind('<Control-R>', transcribe)
+textArea.bind('<Control-a>', select_all_1)
+textArea.bind('<Control-A>', select_all_1)
+output_area.bind('<Control-a>', select_all_2)
+output_area.bind('<Control-A>', select_all_2)
 
 # keep window open
 root.mainloop()

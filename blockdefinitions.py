@@ -4,6 +4,9 @@ x = rubik.Algorithm('x')
 y = rubik.Algorithm('y')
 z = rubik.Algorithm('z')
 
+moves = ["R", "R'", "R2", "U", "U'", "U2", "F", "F'", "F2", "L", "L'", "L2", "D", "D'", "D2", "B", "B'", "B2"]
+moves_open_paren = ["(" + move for move in moves]
+moves_closed_paren = [move + ")" for move in moves]
 
 # checks if UFL square is solved
 def square_solved(c):
