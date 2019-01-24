@@ -109,6 +109,7 @@ def f2lsolved(c):
         return True
     else:
         c.apply_alg(rubik.Algorithm("y2"))
+        print("false")
         return False
 
 
@@ -267,11 +268,10 @@ def check6positions(func, c):
         c.apply_alg(x)
         if func(c):
             return True
-    c.apply_alg(y)
+    c.apply_alg(z)
     if func(c):
         return True
-    c.apply_alg(rubik.Algorithm("x2"))
+    c.apply_alg(rubik.Algorithm("z2"))
     if func(c):
         return True
     return False
-
