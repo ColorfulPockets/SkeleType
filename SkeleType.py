@@ -563,7 +563,7 @@ def transcribe(e):
                 formatted_text = formatted_text + "(" + str(line_length) + "/" + str(totalmoves) + ")"
             formatted_text = formatted_text + "\n"
 
-        output_area.insert(1.0, formatted_text + "\n" + str(movecount) + " Moves.")
+        output_area.insert(1.0, formatted_text + str(movecount) + " Moves.")
     except TclError:
         messagebox.showerror("Solution: deleted or modified", "Error: The word \"Solution: \" has been deleted or "
                                                               "modified. Please type \"Solution: \" at the start "
