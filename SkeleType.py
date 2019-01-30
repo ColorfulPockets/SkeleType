@@ -427,6 +427,57 @@ def movealg():
     return rubik.Algorithm(movestring(textArea.get(2.0, pos))[0] + movestring(textArea.get(1.0, 2.0))[1] + movestring(textArea.get(2.0, pos))[1])
 
 
+# must be passed text that only contains moves
+def lengthaftercancel(moves):
+    try:
+        split_moves = moves.split()
+    except AttributeError:
+        split_moves = moves
+    moves_canceled = 1
+    while moves_canceled != 0:
+        moves_canceled = 0
+        temp = []
+        skipmove = False
+
+        for i in range(len(split_moves)):
+            print(i)
+            if skipmove:
+                print("skipped:", split_moves[i])
+                skipmove = False
+                continue
+            print(split_moves[i])
+            try:
+                if split_moves[i][0] != split_moves[i+1][0]:
+                    temp.append(split_moves[i])
+                    continue
+                skipmove = True
+                moves_canceled += 1
+                print("this move + next move: ", split_moves[i], split_moves[i+1])
+                if split_moves[i] == split_moves[i+1]:
+                    print("moves are the same")
+                    if split_moves[i] in blockdefinitions.movestwo:
+                            print("moves cancel fully")
+                            moves_canceled += 1
+                            continue
+                    temp.append(split_moves[i][0] + "2")
+                elif len(split_moves[i]) == len(split_moves[i+1]):
+                    print("moves are ' and 2")
+                    temp.append(split_moves[i][0])
+                elif split_moves[i] in blockdefinitions.movestwo or split_moves[i+1] in blockdefinitions.movestwo:
+                    print("moves are move and 2")
+                    temp.append(split_moves[i][0] + "'")
+                else:
+                    print("moves cancel fully")
+                    moves_canceled += 1
+                    continue
+            except IndexError:
+                temp.append(split_moves[i])
+                continue
+        print(temp)
+        split_moves = list(temp)
+    return len(split_moves)
+
+
 def clear_tags():
     short = textArea.get("start", INSERT)
 
@@ -535,32 +586,25 @@ def transcribe(e):
 
         split_text = textArea.get(1.0, END).split("\n")
         formatted_text = ""
-        totalmoves = 0
-        linecount = 0
+        linecount = 0.0
+
+# TODO Detect and cancel moves using lengthaftercancel
 
         for line in split_text:
-            if linecount == 1:
-                totalmoves = 0
             linecount = linecount + 1
             split_line = line.split()
-            is_in_move_area = True
-            line_length = 0
             for word in split_line:
                 if word is "//":
                     formatted_text = formatted_text + "\n"
-                    is_in_move_area = False
                 elif word in abbreviations:
                     formatted_text = formatted_text + abbreviations.get(word) + " "
                 else:
                     formatted_text = formatted_text + word + " "
-
-                if is_in_move_area and (word in blockdefinitions.moves or word in blockdefinitions.moves_closed_paren
-                                        or word in blockdefinitions.moves_open_paren):
-                    totalmoves = totalmoves + 1
-                    line_length = line_length + 1
-
             if "//" in split_line:
-                formatted_text = formatted_text + "(" + str(line_length) + "/" + str(totalmoves) + ")"
+                formatted_text = formatted_text + "(" + str(lengthaftercancel(movestring(textArea.get(linecount, (
+                        linecount + 1)))[0]) + lengthaftercancel(movestring(textArea.get(linecount, linecount + 1))[1])) + (
+                        "/") + str(lengthaftercancel(movestring(textArea.get(2.0, linecount + 1))[0]) + (
+                        lengthaftercancel(movestring(textArea.get(2.0, linecount + 1))[1]))) + ")"
             formatted_text = formatted_text + "\n"
 
         output_area.insert(1.0, formatted_text + str(movecount) + " Moves.")
@@ -592,6 +636,11 @@ def select_all_1(e):
 def select_all_2(e):
     output_area.tag_add("sel", '1.0', 'end')
 
+
+def testfunction(e):
+    print(lengthaftercancel("U U U U U U U U U U U"))
+
+
 root.bind('<Control-s>', savefile)
 root.bind('<Control-r>', transcribe)
 root.bind('<Control-S>', savefile)
@@ -600,6 +649,7 @@ textArea.bind('<Control-a>', select_all_1)
 textArea.bind('<Control-A>', select_all_1)
 output_area.bind('<Control-a>', select_all_2)
 output_area.bind('<Control-A>', select_all_2)
+root.bind('<Control-t>', testfunction)  # TODO: Delete this binding and function
 
 # keep window open
 root.mainloop()

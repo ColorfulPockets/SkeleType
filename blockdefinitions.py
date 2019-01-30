@@ -7,6 +7,10 @@ z = rubik.Algorithm('z')
 moves = ["R", "R'", "R2", "U", "U'", "U2", "F", "F'", "F2", "L", "L'", "L2", "D", "D'", "D2", "B", "B'", "B2"]
 moves_open_paren = ["(" + move for move in moves]
 moves_closed_paren = [move + ")" for move in moves]
+moves_both_paren = ["(" + move + ")" for move in moves]
+
+movesprime = [move + "'" for move in rubik.FACE_MOVES]
+movestwo = [move + "2" for move in rubik.FACE_MOVES]
 
 # checks if UFL square is solved
 def square_solved(c):
