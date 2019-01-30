@@ -4,4 +4,3 @@ venv
 Text_Detector.py
 build/
 SkeleType.spec
-dist/
