@@ -412,14 +412,17 @@ def movestring(text):
 
 
 def invstring(word):
-    if word in rubik.FACE_MOVES:
-        move = word + "'"
-    elif len(word) == 2:
-        if word[1] == "'":
-            move = word[0:len(word) - 1]
-        elif word[1] == "2":
-            move = word
-    return move
+    try:
+        if word in rubik.FACE_MOVES:
+            move = word + "'"
+        elif len(word) == 2:
+            if word[1] == "'":
+                move = word[0:len(word) - 1]
+            elif word[1] == "2":
+                move = word
+        return move
+    except UnboundLocalError:
+        return ""
 
 def movealg():
     short = textArea.get("start", INSERT)
@@ -440,40 +443,40 @@ def lengthaftercancel(moves):
         skipmove = False
 
         for i in range(len(split_moves)):
-            print(i)
+            # print(i)
             if skipmove:
-                print("skipped:", split_moves[i])
+                # print("skipped:", split_moves[i])
                 skipmove = False
                 continue
-            print(split_moves[i])
+            # print(split_moves[i])
             try:
                 if split_moves[i][0] != split_moves[i+1][0]:
                     temp.append(split_moves[i])
                     continue
                 skipmove = True
                 moves_canceled += 1
-                print("this move + next move: ", split_moves[i], split_moves[i+1])
+                # print("this move + next move: ", split_moves[i], split_moves[i+1])
                 if split_moves[i] == split_moves[i+1]:
-                    print("moves are the same")
+                    # print("moves are the same")
                     if split_moves[i] in blockdefinitions.movestwo:
-                            print("moves cancel fully")
+                            # print("moves cancel fully")
                             moves_canceled += 1
                             continue
                     temp.append(split_moves[i][0] + "2")
                 elif len(split_moves[i]) == len(split_moves[i+1]):
-                    print("moves are ' and 2")
+                    # print("moves are ' and 2")
                     temp.append(split_moves[i][0])
                 elif split_moves[i] in blockdefinitions.movestwo or split_moves[i+1] in blockdefinitions.movestwo:
-                    print("moves are move and 2")
+                    # print("moves are move and 2")
                     temp.append(split_moves[i][0] + "'")
                 else:
-                    print("moves cancel fully")
+                    # print("moves cancel fully")
                     moves_canceled += 1
                     continue
             except IndexError:
                 temp.append(split_moves[i])
                 continue
-        print(temp)
+        # print(temp)
         split_moves = list(temp)
     return len(split_moves)
 
@@ -588,8 +591,6 @@ def transcribe(e):
         formatted_text = ""
         linecount = 0.0
 
-# TODO Detect and cancel moves using lengthaftercancel
-
         for line in split_text:
             linecount = linecount + 1
             split_line = line.split()
@@ -600,11 +601,12 @@ def transcribe(e):
                     formatted_text = formatted_text + abbreviations.get(word) + " "
                 else:
                     formatted_text = formatted_text + word + " "
+            # Adds the running movecount, but also detects any cancellations in the moves, even with previous lines
             if "//" in split_line:
                 formatted_text = formatted_text + "(" + str(lengthaftercancel(movestring(textArea.get(linecount, (
-                        linecount + 1)))[0]) + lengthaftercancel(movestring(textArea.get(linecount, linecount + 1))[1])) + (
-                        "/") + str(lengthaftercancel(movestring(textArea.get(2.0, linecount + 1))[0]) + (
-                        lengthaftercancel(movestring(textArea.get(2.0, linecount + 1))[1]))) + ")"
+                        linecount + 1)))[0]) + lengthaftercancel(movestring(textArea.get(linecount, linecount + 1))[(
+                            1)])) + "/" + str(lengthaftercancel(movestring(textArea.get(2.0, linecount + 1))[0]) + (
+                                 lengthaftercancel(movestring(textArea.get(2.0, linecount + 1))[1]))) + ")"
             formatted_text = formatted_text + "\n"
 
         output_area.insert(1.0, formatted_text + str(movecount) + " Moves.")
