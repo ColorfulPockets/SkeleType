@@ -244,6 +244,7 @@ def pseudo():
     coloryellow()
 
 
+# TODO: Something here is broken in detection
 def domino():
     c = rubik.Cube()
     c.apply_alg(movealg())
