@@ -554,14 +554,17 @@ def about():
                                  "line, write your skeleton in between, and type your solution on the last line. Use"
                                  " \"//\"  to label parts of your"
                                  " skeleton. SkeleType will automatically check if your solution is correct while you "
-                                 "are typing it.\n\nSkeleType will also format your solution with a movecount and "
+                                 "are typing it (be sure to add a space after each move and after \"//\" or else it"
+                                 " will not work properly)."
+                                 "\n\nSkeleType will also format your solution with a movecount and "
                                  "expand abbreviations for blocks and other steps in the skeleton.  \n\nIf "
                                  "you have any questions or suggestions, tweet me "
                                  "@AndrewNathenson\n\nWARNING: DO NOT "
                                  "DELETE \"Scramble: \" OR \"Solution: \" -- it will break. \n\nThe following shortcuts"
                                  " can be used and will be detected and color-coded (green = it "
                                  "works!, red = it doesn't work) "
-                                 "along with some variations of these phrases:\n\nSquare: sq, 122, 221\n\n1x2x3: roux, 123,"
+                                 "along with some variations of these phrases:\n\nSquare: sq, 122, 221\n\n1x2x3: "
+                                 "roux, 123,"
                                  " 321\n\n2x2x2: 222, 2x2\n\n2x2x3: 223, 322, petrus\n\nDomino Reduction: dr, dom, "
                                  "domino\n\nOther abbreviations and labels are also detected. Try typing different"
                                  " things to see what works, or check the source code or something for the full list.")
@@ -593,6 +596,9 @@ def transcribe(e):
         linecount = 0.0
 
         for line in split_text:
+            insertion = False
+            if ":" in line:
+                insertion = True
             linecount = linecount + 1
             split_line = line.split()
             for word in split_line:
@@ -603,7 +609,7 @@ def transcribe(e):
                 else:
                     formatted_text = formatted_text + word + " "
             # Adds the running movecount, but also detects any cancellations in the moves, even with previous lines
-            if "//" in split_line:
+            if "//" in split_line and not insertion:
                 formatted_text = formatted_text + "(" + str(lengthaftercancel(movestring(textArea.get(linecount, (
                         linecount + 1)))[0]) + lengthaftercancel(movestring(textArea.get(linecount, linecount + 1))[(
                             1)])) + "/" + str(lengthaftercancel(movestring(textArea.get(2.0, linecount + 1))[0]) + (
