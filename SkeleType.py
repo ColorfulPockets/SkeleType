@@ -244,7 +244,6 @@ def pseudo():
     coloryellow()
 
 
-# TODO: Something here is broken in detection
 def domino():
     c = rubik.Cube()
     c.apply_alg(movealg())
@@ -268,6 +267,7 @@ def domino():
         colorred()
 
 
+# TODO: Test this.  DR was broken, this might be too.
 def partialdomino():
     c = rubik.Cube()
     c.apply_alg(movealg())
