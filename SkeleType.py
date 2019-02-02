@@ -425,6 +425,7 @@ def invstring(word):
     except UnboundLocalError:
         return ""
 
+# TODO: Make this just go up until the start marker
 def movealg():
     short = textArea.get("start", INSERT)
     pos = textArea.search(short, '0.0', stopindex=END)
