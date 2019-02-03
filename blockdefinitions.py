@@ -208,19 +208,12 @@ def pdrsolved(c):
     return True
 
 
-# TODO: The logic here is wrong, doesn't check EO for E-Layer, and can be tricked if the U/D faces have just two colors,
-#  but they're not the DR colors. I couldn't get DR detection to work, though, so this will suffice for now.
+# TODO: This can only tell if the U and D face contain just two colors total (which is only possible if the U and D
+#  face are oriented).  It does not check E-layer edges, though, so it is possible to have some of those flipped.
 def dominosolved(c):
     is_solved = True
 
-    c.apply_alg(rubik.Algorithm("z2"))
-
-    if not c.ll_oriented:
-        is_solved = False
-
-    c.apply_alg(rubik.Algorithm("z2"))
-
-    if not c.ll_oriented:
+    if len(set(c.cube[0][0]).union(set(c.cube[0][1]).union(set(c.cube[0][2]).union(set(c.cube[5][0]).union(set(c.cube[5][1]).union(set(c.cube[5][2]))))))) > 2:
         is_solved = False
 
     return is_solved
