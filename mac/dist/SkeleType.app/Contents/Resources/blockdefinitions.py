@@ -1,1 +1,0 @@
-/Users/AndrewNathenson/PythonProjects/SkeleType/blockdefinitions.py
