@@ -1,8 +1,4 @@
-dist/SkeleType.app
-dist/SkeleType
+setup.py
 .idea
 __pycache__
 venv
-Text_Detector.py
-build/
-SkeleType.spec
