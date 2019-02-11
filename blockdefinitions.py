@@ -208,15 +208,23 @@ def pdrsolved(c):
     return True
 
 
-# TODO: This can only tell if the U and D face contain just two colors total (which is only possible if the U and D
-#  face are oriented).  It does not check E-layer edges, though, so it is possible to have some of those flipped.
+# checks if domino with U and D being oriented is solved
 def dominosolved(c):
-    is_solved = True
+    up = c.cube[0][1][1]
+    down = c.cube[5][1][1]
+    for i in c.cube[0]:
+        for j in i:
+            if j != up and j != down:
+                return False
+    for i in c.cube[5]:
+        for j in i:
+            if j != up and j != down:
+                return False
 
-    if len(set(c.cube[0][0]).union(set(c.cube[0][1]).union(set(c.cube[0][2]).union(set(c.cube[5][0]).union(set(c.cube[5][1]).union(set(c.cube[5][2]))))))) > 2:
-        is_solved = False
+    if eosolved(c):
+        return True
 
-    return is_solved
+    return False
 
 
 def check24positions(func, c):

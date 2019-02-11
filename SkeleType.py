@@ -216,7 +216,6 @@ def run():
     func()
 
 
-
 def eo():
     c = rubik.Cube()
     c.apply_alg(movealg())
@@ -267,7 +266,6 @@ def domino():
         colorred()
 
 
-# TODO: Test this.  DR was broken, this might be too.
 def partialdomino():
     c = rubik.Cube()
     c.apply_alg(movealg())
@@ -424,6 +422,7 @@ def invstring(word):
         return move
     except UnboundLocalError:
         return ""
+
 
 # TODO: Make this just go up until the start marker
 def movealg():
