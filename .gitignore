@@ -1,3 +1,5 @@
+dist/SkeleType.app
+dist/SkeleType
 .idea
 __pycache__
 venv
