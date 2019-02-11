@@ -2,3 +2,4 @@ setup.py
 .idea
 __pycache__
 venv
+Text_Detector.py
