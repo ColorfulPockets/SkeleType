@@ -3,9 +3,11 @@
 A Fewest Moves skeleton typing assistant.
 
 
-Mac users: Download the whole repository. In the dist folder, run SkeleType.app
+To use:
 
-Windows users: download the .exe file
-
+1. Download the repository
+2. Open the dist folder
+Mac users: run SkeleType.app
+Windows users: run SkeleType.exe
 
 For info on how to use SkeleType, click "about" in the app.
